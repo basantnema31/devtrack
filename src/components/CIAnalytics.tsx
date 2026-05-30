@@ -119,6 +119,7 @@ export default function CIAnalytics() {
           onClick={fetchCIAnalytics}
           disabled={isRateLimited || loading}
           title={isRateLimited ? "GitHub API rate limit reached" : "Refresh CI data"}
+          aria-label={isRateLimited ? "GitHub API rate limit reached" : "Refresh CI data"}
           className="inline-flex items-center gap-1.5 rounded-md border border-[var(--border)] px-3 py-1.5 text-xs font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--control)] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? (
