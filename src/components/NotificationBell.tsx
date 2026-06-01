@@ -132,11 +132,16 @@ export default function NotificationBell() {
 
   return (
     <div className="relative" ref={dropdownRef}>
+      {/* Dynamic announcement live region */}
+      <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+        {unreadCount > 0 ? `${unreadCount} unread notifications` : "No unread notifications"}
+      </div>
+
       {/* Bell button */}
       <button
         type="button"
         onClick={handleOpen}
-        className="relative rounded-lg p-2 text-[var(--muted-foreground)] hover:bg-[var(--control)] hover:text-[var(--card-foreground)] transition-colors"
+        className="relative rounded-lg p-2 text-[var(--muted-foreground)] hover:bg-[var(--control)] hover:text-[var(--card-foreground)] transition-all hover:opacity-90 active:scale-95"
         aria-label="Notifications"
         title="Notifications"
         suppressHydrationWarning

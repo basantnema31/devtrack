@@ -16,6 +16,7 @@ import SignOutButton from "@/components/SignOutButton";
 import ThemeToggle from "@/components/ThemeToggle";
 import UserAvatar from "@/components/UserAvatar";
 import KeyboardShortcuts from "@/components/KeyboardShortcuts";
+import { toast } from "sonner";
 
 type DashboardSyncContextValue = {
   lastSynced: Date | null;
@@ -87,7 +88,20 @@ function useDashboardSync() {
 export default function DashboardHeader() {
   const { data: session } = useSession();
   const [isPublic, setIsPublic] = useState<boolean | null>(null);
+  const [copied, setCopied] = useState(false);
   const [greeting, setGreeting] = useState<string>("Welcome back");
+
+  const handleCopyLink = () => {
+    if (!session?.githubLogin) return;
+    const profileUrl = `${window.location.origin}/u/${session.githubLogin}`;
+    navigator.clipboard.writeText(profileUrl).then(() => {
+      setCopied(true);
+      toast.success("Profile link copied!");
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {
+      toast.error("Failed to copy link");
+    });
+  };
 
   // Determine the user's personalized greeting string based on local timestamp metrics
   useEffect(() => {
@@ -178,21 +192,6 @@ export default function DashboardHeader() {
 
           <p className="mt-2 text-sm md:text-base text-[var(--muted-foreground)]">
             Your coding activity at a glance 🚀
-        <div className="min-w-0">
-          <p
-            className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--muted-foreground)]"
-            style={{ fontFamily: "var(--font-jetbrains, ui-monospace, monospace)" }}
-          >
-            Dashboard overview
-          </p>
-          <h1 className="mt-2 bg-gradient-to-r from-[var(--foreground)] via-[var(--foreground)] to-[var(--accent)] bg-clip-text text-3xl font-extrabold text-transparent md:text-4xl">
-            Dashboard
-          </h1>
-          <p
-            className="mt-2 max-w-xl text-sm leading-6 text-[var(--muted-foreground)]"
-            style={{ fontFamily: "var(--font-jetbrains, ui-monospace, monospace)", letterSpacing: "0.06em" }}
-          >
-            coding activity at a glance
           </p>
           {minutesAgo !== null && (
             <p className="mt-1 text-xs text-[var(--muted-foreground)]">
@@ -205,15 +204,26 @@ export default function DashboardHeader() {
         <div className="flex min-w-0 flex-col gap-3 sm:items-end">
           <div className="flex flex-wrap items-center gap-3">
             {isPublic === true && session?.githubLogin && (
-              <a
-                href={`/u/${session.githubLogin}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="primary-button inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold"
-                title="View your public profile"
-              >
-                Share Profile
-              </a>
+              <>
+                <a
+                  href={`/u/${session.githubLogin}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="primary-button inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold"
+                  title="View your public profile"
+                >
+                  Share Profile
+                </a>
+                <button
+                  type="button"
+                  onClick={handleCopyLink}
+                  title="Copy profile link to clipboard"
+                  aria-label="Copy profile link"
+                  className="rounded-xl border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--control-hover)] px-3 py-2 text-sm font-medium text-[var(--foreground)] transition-all active:scale-95 whitespace-nowrap"
+                >
+                  {copied ? "Copied! ✓" : "Copy Link 📋"}
+                </button>
+              </>
             )}
 
             <div className="flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--card-muted)]/50 p-2 shadow-sm backdrop-blur-sm">
